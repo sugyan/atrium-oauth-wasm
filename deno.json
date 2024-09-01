@@ -1,0 +1,17 @@
+{
+  "deploy": {
+    "project": "atrium-oauth-dev",
+    "exclude": [
+      "**/node_modules"
+    ],
+    "include": [
+      "main.ts",
+      "pkg"
+    ],
+    "entrypoint": "main.ts"
+  },
+  "tasks": {
+    "build": "wasm-pack build --target deno --release",
+    "dev": "deno run --watch --allow-net --allow-read --allow-env --env main.ts"
+  }
+}
