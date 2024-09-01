@@ -95,6 +95,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "atrium-oauth-wasm"
+version = "0.1.0"
+dependencies = [
+ "atrium-oauth-client",
+ "elliptic-curve",
+ "getrandom",
+ "jose-jwk",
+ "p256",
+ "serde",
+ "serde-wasm-bindgen",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+]
+
+[[package]]
 name = "atrium-xrpc"
 version = "0.11.3"
 source = "git+https://github.com/sugyan/atrium?branch=feature/oauth#dcd91c469cd6bcd9ba0d4a75210625b83a7ccd4f"
@@ -840,21 +855,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
 dependencies = [
  "autocfg",
-]
-
-[[package]]
-name = "oauth-wasm"
-version = "0.1.0"
-dependencies = [
- "atrium-oauth-client",
- "elliptic-curve",
- "getrandom",
- "jose-jwk",
- "p256",
- "serde",
- "serde-wasm-bindgen",
- "wasm-bindgen",
- "wasm-bindgen-futures",
 ]
 
 [[package]]

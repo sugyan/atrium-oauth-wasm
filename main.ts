@@ -43,6 +43,9 @@ app.get("/", (c) => {
       <ul>
         <li><a href="/client-metadata.json">Client Metadata</a></li>
         <li><a href="/.well-known/jwks.json">JWKS</a></li>
+        <li>
+          <a href="https://github.com/sugyan/atrium-oauth-wasm">Source Code</a>
+        </li>
       </ul>
     </html>`);
 });
