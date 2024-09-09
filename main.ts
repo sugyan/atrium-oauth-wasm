@@ -19,6 +19,7 @@ const client = new WasmOAuthClient({
     token_endpoint_auth_signing_alg: "ES256",
   },
   keys: [Deno.env.get("PRIVATE_KEY_1")],
+  doh_service_url: Deno.env.get("DOH_SERVICE_URL"),
 });
 
 const app = new Hono();

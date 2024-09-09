@@ -1,12 +1,17 @@
+use atrium_oauth_client::identity::handle::{
+    DohDnsTxtResolver, DohDnsTxtResolverConfig, HandleResolverImpl,
+};
+use atrium_oauth_client::identity::HandleResolverConfig;
 use atrium_oauth_client::store::state::MemoryStateStore;
 use atrium_oauth_client::{
-    AtprotoClientMetadata, OAuthClient, OAuthClientConfig, OAuthResolverConfig,
+    AtprotoClientMetadata, DefaultHttpClient, OAuthClient, OAuthClientConfig, OAuthResolverConfig,
 };
 use elliptic_curve::pkcs8::DecodePrivateKey;
 use elliptic_curve::SecretKey;
 use jose_jwk::{Class, Jwk, Key, Parameters};
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::Serializer;
+use std::sync::Arc;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
@@ -14,6 +19,7 @@ use wasm_bindgen::JsValue;
 struct WasmOAuthClientConfig {
     metadata: AtprotoClientMetadata,
     keys: Option<Vec<String>>,
+    doh_service_url: String,
 }
 
 #[wasm_bindgen]
@@ -49,8 +55,16 @@ impl WasmOAuthClient {
             client_metadata: config.metadata,
             keys,
             resolver: OAuthResolverConfig {
-                handle_resolver: "https://public.api.bsky.app".try_into().unwrap(),
-                plc_directory_url: None,
+                did: Default::default(),
+                handle: HandleResolverConfig {
+                    r#impl: HandleResolverImpl::Atproto(Arc::new(
+                        DohDnsTxtResolver::new(DohDnsTxtResolverConfig {
+                            service_url: config.doh_service_url,
+                            http_client: Arc::new(DefaultHttpClient::default()),
+                        })
+                        .map_err(|e| JsValue::from_str(&e.to_string()))?,
+                    )),
+                },
             },
             state_store: MemoryStateStore::default(),
         })

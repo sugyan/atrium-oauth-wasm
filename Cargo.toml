@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-atrium-oauth-client = { git = "https://github.com/sugyan/atrium", branch = "feature/oauth" }
+atrium-oauth-client = { git = "https://github.com/sugyan/atrium", branch = "feature/oauth", features = ["doh-handle-resolver"] }
 elliptic-curve = { version = "0.13.8", default-features = false }
 getrandom = { version = "0.2", features = ["js"] }
 jose-jwk = { version = "0.1.2", default-features = false, features = ["p256"] }
