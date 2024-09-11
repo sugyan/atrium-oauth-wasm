@@ -1,26 +1,43 @@
 import { Hono } from "https://deno.land/x/hono@v4.3.11/mod.ts";
 import { html } from "https://deno.land/x/hono@v4.3.11/helper/html/index.ts";
-import { WasmOAuthClient } from "./pkg/oauth_wasm.js";
+import { WasmOAuthClient } from "./pkg/atrium_oauth_wasm.js";
+import { Store } from "./pkg/atrium_oauth_wasm.d.ts";
 
 const URL_BASE = Deno.env.get("URL_BASE") || "http://localhost";
 const CALLBACK_PATH = "/callback";
 const CLIENT_METADATA_PATH = "/client-metadata.json";
 const JWKS_PATH = "/.well-known/jwks.json";
 
-const client = new WasmOAuthClient({
-  metadata: {
-    client_id: URL_BASE + CLIENT_METADATA_PATH,
-    client_uri: URL_BASE,
-    redirect_uris: [URL_BASE + CALLBACK_PATH],
-    token_endpoint_auth_method: "private_key_jwt",
-    grant_types: ["authorization_code"],
-    scopes: ["atproto"],
-    jwks_uri: URL_BASE + JWKS_PATH,
-    token_endpoint_auth_signing_alg: "ES256",
+class KvStore implements Store {
+  constructor(readonly kv: Deno.Kv) {}
+  async get(key: string) {
+    return (await this.kv.get([key])).value;
+  }
+  async set(key: string, value: unknown) {
+    await this.kv.set([key], value);
+  }
+  async del(key: string) {
+    await this.kv.delete([key]);
+  }
+}
+
+const client = new WasmOAuthClient(
+  {
+    metadata: {
+      client_id: URL_BASE + CLIENT_METADATA_PATH,
+      client_uri: URL_BASE,
+      redirect_uris: [URL_BASE + CALLBACK_PATH],
+      token_endpoint_auth_method: "private_key_jwt",
+      grant_types: ["authorization_code"],
+      scopes: ["atproto"],
+      jwks_uri: URL_BASE + JWKS_PATH,
+      token_endpoint_auth_signing_alg: "ES256",
+    },
+    keys: [Deno.env.get("PRIVATE_KEY_1")],
+    doh_service_url: Deno.env.get("DOH_SERVICE_URL"),
   },
-  keys: [Deno.env.get("PRIVATE_KEY_1")],
-  doh_service_url: Deno.env.get("DOH_SERVICE_URL"),
-});
+  new KvStore(await Deno.openKv())
+);
 
 const app = new Hono();
 

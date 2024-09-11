@@ -1,8 +1,10 @@
+mod store;
+
+use self::store::{Store, WasmStateStore};
 use atrium_oauth_client::identity::handle::{
     DohDnsTxtResolver, DohDnsTxtResolverConfig, HandleResolverImpl,
 };
 use atrium_oauth_client::identity::HandleResolverConfig;
-use atrium_oauth_client::store::state::MemoryStateStore;
 use atrium_oauth_client::{
     AtprotoClientMetadata, DefaultHttpClient, OAuthClient, OAuthClientConfig, OAuthResolverConfig,
 };
@@ -24,13 +26,13 @@ struct WasmOAuthClientConfig {
 
 #[wasm_bindgen]
 pub struct WasmOAuthClient {
-    inner: OAuthClient<MemoryStateStore>,
+    inner: OAuthClient<WasmStateStore>,
 }
 
 #[wasm_bindgen]
 impl WasmOAuthClient {
     #[wasm_bindgen(constructor)]
-    pub fn new(config_obj: JsValue) -> Result<WasmOAuthClient, JsValue> {
+    pub fn new(config_obj: JsValue, store: Store) -> Result<WasmOAuthClient, JsValue> {
         let config = serde_wasm_bindgen::from_value::<WasmOAuthClientConfig>(config_obj)?;
         let keys = if let Some(keys) = config.keys {
             let mut jwks = Vec::with_capacity(keys.len());
@@ -66,7 +68,7 @@ impl WasmOAuthClient {
                     )),
                 },
             },
-            state_store: MemoryStateStore::default(),
+            state_store: WasmStateStore::new(store),
         })
         .map_err(|e| JsValue::from_str(&e.to_string()))?;
         Ok(Self { inner: client })

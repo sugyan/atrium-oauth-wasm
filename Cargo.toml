@@ -5,12 +5,14 @@ edition = "2021"
 
 [dependencies]
 atrium-oauth-client = { git = "https://github.com/sugyan/atrium", branch = "feature/oauth", features = ["doh-handle-resolver"] }
+async-trait = "0.1.82"
 elliptic-curve = { version = "0.13.8", default-features = false }
 getrandom = { version = "0.2", features = ["js"] }
 jose-jwk = { version = "0.1.2", default-features = false, features = ["p256"] }
 p256 = { version = "0.13.2", default-features = false, features = ["pem"] }
 serde = { version = "1.0.209", features = ["derive"] }
 serde-wasm-bindgen = "0.6.5"
+thiserror = "1.0.63"
 wasm-bindgen = "0.2.93"
 wasm-bindgen-futures = "0.4.43"
 
