@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use atrium_oauth_client::store::state::{InternalStateData, StateStore};
 use atrium_oauth_client::store::SimpleStore;
 use serde::Serialize;
@@ -45,7 +44,6 @@ impl WasmStateStore {
     }
 }
 
-#[async_trait(?Send)]
 impl SimpleStore<String, InternalStateData> for WasmStateStore {
     type Error = WasmStateStoreError;
 
